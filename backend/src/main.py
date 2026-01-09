@@ -1,3 +1,4 @@
+import os
 import signal
 import sys
 from contextlib import asynccontextmanager
@@ -23,13 +24,13 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS設定
+# CORS設定（環境変数から取得、カンマ区切りで複数指定可能）
+cors_origins_str = os.getenv("CORS_ORIGINS", "http://localhost:3847,http://127.0.0.1:3847")
+cors_origins = [origin.strip() for origin in cors_origins_str.split(",")]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3847",
-        "http://127.0.0.1:3847",
-    ],
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
